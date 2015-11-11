@@ -17,6 +17,10 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
   $scope.iterator = [];
   $scope.bands = [];
   $scope.locations = [];
+  $scope.user = "";
+  $scope.last = true;
+  $scope.error = false;
+  $scope.keyWord = "";
   
   $scope.audioObject = {};
 
@@ -101,8 +105,6 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
       })(j);
 
     }
-
-    $("#input").val("");
     
   };
 
@@ -124,31 +126,51 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
   }
 
   $scope.getArtists = function(){
-    $scope.iterator = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    $scope.iterator = [];
     $scope.bands = [];
     $scope.locations = [];
+    $scope.error = false;
+
     
     $http.get(lastFmBase + "?user=" + $scope.user + "&method=user.gettopartists&api_key=ef2f18ff332a62f72ad46c4820bdb11b&format=json").then(function(response){
       
-      var artists = response.data.topartists.artist;
-      for(var i = 0; i < 10; i++){
-        
-        $scope.bands[i] = artists[i].name;
+      if(response.data.message != "User not found"){
+        $scope.iterator = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        var artists = response.data.topartists.artist;
+        for(var i = 0; i < 10; i++){
+          
+          $scope.bands[i] = artists[i].name;
 
-      }
-      
-      $scope.getLocations();
-      if(!$scope.$$phase) {
-        $scope.$apply();
+        }
+        
+        $scope.getLocations();
+        if(!$scope.$$phase) {
+          $scope.$apply();
+        }
+      }else{
+        $scope.error = true;
       }
       
       
     })
-      
-      
     
     console.log($scope.bands)
     //loadLocations();
+  };
+
+  $scope.toggle = function(lastFm){
+    $scope.last = lastFm;
+  }
+
+  $scope.searchSpotify = function(){
+      $http.get(baseUrl + $scope.track).success(function(response){
+        data = $scope.tracks = response.tracks.items
+        for (var i = 0; i < $scope.tracks.length; i++){
+          var currName = $scope.tracks[i].artists[0].name;
+
+        }
+      
+    })
   };
 
 })

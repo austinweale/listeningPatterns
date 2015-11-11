@@ -20,34 +20,81 @@
 	
 </head>
 <body>
+	
+	<div class="page-header" > 
+		<div class="container">
+			<h1>Geographic Listening Patterns </h1>
+		</div>
+	</div>
 	<!-- Initiate app -->
 	<div ng-app="myApp" ng-controller="myCtrl">
+		<div class="navbar nabbar-default">
+		<div class="container">
+			<ul class="nav navbar-nav">
+				<li><a ng-click="toggle(true)">last.fm search</a></li>
+				<li><a ng-click="toggle(false)">spotify playlist search</a></li>
+			</ul>
+		</div>
+	</div>
 		<!-- Form -->
-		<form id="search"class="container" name="songForm">
+		<form ng-show="last" id="search"class="container" name="songForm">
 			<div class="form-group">
-				<label>Spotify search:</label>
-				<input id="input" name="search" placeholder="Enter your search.." ng-model="user" class="form-control"></input>
+				<label>Last.fm user search:</label>
+				<input id="input" name="search" placeholder="Enter a last.fm username" ng-model="user" class="form-control"></input>
 			</div>
 			<div class="form-group">
 				<button ng-disabled="songForm.search.$invalid" class="btn btn-primary" ng-click="getArtists()" type="submit">Submit</button>
 			</div>
 		</form>
+		<form ng-show="!last"id="search-spotify"class="container" name="spotifyForm">
+			<div class="form-group">
+				<label>Search song keywords:</label>
+				<input  name="search" placeholder="Enter a spotify playlist name" ng-model="track" class="form-control"></input>
+			</div>
+
+			<div class="form-group">
+				<button ng-disabled="songForm.search.$invalid" class="btn btn-primary" ng-click="searchSpotify()" type="submit">Submit</button>
+			</div>
+		</form>
 		<div id="location">
-			<table class="table">
+			<table ng-show="iterator.length != 0" class="table">
+				<tr>
+					<th>Rank</th>
+					<th>Artist</th>
+					<th>location</th>
+
+				</tr>
 				<tr ng-repeat="num in iterator">
+					<td ng-bind="num + 1"></td>
 					<td ng-bind="bands[num]"></td>
 					<td ng-bind="locations[num]"></td>
 				</tr>
 				
 			</table>
 		</div>
+		<div ng-show="error">User not found</div>
 		
 		<!-- Results -->
 		<div id="result" class="container-fixed">
-			<p ng-show="tracks.length>0" class="help-block">Click to sample</p>
+			<!--<p ng-show="tracks.length>0" class="help-block">Click to sample</p>
 			<ul>
 				<li ng-repeat="track in tracks" class="" ng-click="play(track.preview_url)" title="{{track.name}}">{{track.name + ', by ' + track.artists[0].name}}</li>
-			</ul>
+			</ul>-->
+			<table ng-show="tracks.length>0" class="table">
+				<tr>
+					<th>Track</th>
+					<th>Artist</th>
+					<th>location</th>
+
+				</tr>
+				<tr ng-repeat="track in tracks">
+					
+					<td ng-bind="track.name"></td>
+					<td ng-bind="track.artists[0].name"></td>
+					<td ng-bind="0"></td>
+				</tr>
+				
+			</table>
 		</div>
 	</div>
 	</div>
