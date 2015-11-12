@@ -21,6 +21,7 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
   $scope.last = true;
   $scope.error = false;
   $scope.keyWord = "";
+  $scope.songs = [];
   
   $scope.audioObject = {};
 
@@ -151,26 +152,45 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
         $scope.error = true;
       }
       
-      
     })
     
     console.log($scope.bands)
     //loadLocations();
   };
 
+  
   $scope.toggle = function(lastFm){
+    $scope.iterator = [];
+    $scope.bands = [];
+    $scope.songs = [];
+    $scope.locations = [];
     $scope.last = lastFm;
   }
 
+  //contacts the spotify API to find songs that match the input keyword
+  //Triggers the search for the artist locations as well
   $scope.searchSpotify = function(){
-      $http.get(baseUrl + $scope.track).success(function(response){
-        data = $scope.tracks = response.tracks.items
-        for (var i = 0; i < $scope.tracks.length; i++){
-          var currName = $scope.tracks[i].artists[0].name;
+    $scope.iterator = [];
+    $scope.bands = [];
+    $scope.songs = [];
+    $scope.locations = [];
+    $http.get(baseUrl + $scope.track).success(function(response){
+      data = $scope.tracks = response.tracks.items
+      for (var i = 0; i < $scope.tracks.length; i++){
+        $scope.iterator[i] = i;
 
-        }
-      
+        var currName = $scope.tracks[i].artists[0].name;
+        var currSong = $scope.tracks[i].name;
+        $scope.bands[i] = currName;
+        $scope.songs[i] = currSong;
+
+      }
+      if(!$scope.$$phase) {
+        $scope.$apply();
+      }
+      $scope.getLocations();
     })
+
   };
 
 })

@@ -49,15 +49,16 @@
 		<form ng-show="!last"id="search-spotify"class="container" name="spotifyForm">
 			<div class="form-group">
 				<label>Search song keywords:</label>
-				<input  name="search" placeholder="Enter a spotify playlist name" ng-model="track" class="form-control"></input>
+				<input  name="search" placeholder="Enter a spotify keyword" ng-model="track" class="form-control"></input>
 			</div>
 
 			<div class="form-group">
 				<button ng-disabled="songForm.search.$invalid" class="btn btn-primary" ng-click="searchSpotify()" type="submit">Submit</button>
 			</div>
 		</form>
-		<div id="location">
-			<table ng-show="iterator.length != 0" class="table">
+		<div id="location" class="container">
+			<table ng-show="iterator.length != 0 && last" class="table">
+				<caption>Top Artists For {{user}}</caption>
 				<tr>
 					<th>Rank</th>
 					<th>Artist</th>
@@ -76,22 +77,19 @@
 		
 		<!-- Results -->
 		<div id="result" class="container-fixed">
-			<!--<p ng-show="tracks.length>0" class="help-block">Click to sample</p>
-			<ul>
-				<li ng-repeat="track in tracks" class="" ng-click="play(track.preview_url)" title="{{track.name}}">{{track.name + ', by ' + track.artists[0].name}}</li>
-			</ul>-->
-			<table ng-show="tracks.length>0" class="table">
+			
+			<table ng-show="tracks.length>0 && !last" class="table">
 				<tr>
 					<th>Track</th>
 					<th>Artist</th>
 					<th>location</th>
 
 				</tr>
-				<tr ng-repeat="track in tracks">
+				<tr ng-repeat="num in iterator">
 					
-					<td ng-bind="track.name"></td>
-					<td ng-bind="track.artists[0].name"></td>
-					<td ng-bind="0"></td>
+					<td ng-bind="songs[num]"></td>
+					<td ng-bind="bands[num]"></td>
+					<td ng-bind="locations[num]"></td>
 				</tr>
 				
 			</table>
