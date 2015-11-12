@@ -29,15 +29,30 @@
 	<!-- Initiate app -->
 	<div ng-app="myApp" ng-controller="myCtrl">
 		<div class="navbar nabbar-default">
-		<div class="container">
-			<ul class="nav navbar-nav">
-				<li><a ng-click="toggle(true)">last.fm search</a></li>
-				<li><a ng-click="toggle(false)">spotify playlist search</a></li>
-			</ul>
+			<div class="container">
+				<ul class="nav navbar-nav">
+					<li><a ng-click="toggle(1)">last.fm search</a></li>
+					<li><a ng-click="toggle(2)">spotify playlist search</a></li>
+					<li><a ng-click="toggle(3)">About this page</a></li>
+				</ul>
+			</div>
 		</div>
-	</div>
-		<!-- Form -->
-		<form ng-show="last" id="search"class="container" name="songForm">
+
+		<div ng-show="tab == 3" class="container">
+			
+			<p>
+				<em>Last.fm</em> search will take in a Last.fm user name and display the user's top ten bands along with where they're from.
+			</p>
+			<p>
+				<em>Spotify Search</em> will take in a keyword, and show all songs related to the keyword and display where the band is from. 
+			</p>
+			<p>
+				This page uses data provided by spotify, last.fm and the musicBrainz APIs. Any location data not found is displayed as "unknown"
+			</p>
+			
+		</div>
+		<!-- Form for last.fm search -->
+		<form ng-show="tab == 1" id="search"class="container" name="songForm">
 			<div class="form-group">
 				<label>Last.fm user search:</label>
 				<input id="input" name="search" placeholder="Enter a last.fm username" ng-model="user" class="form-control"></input>
@@ -46,7 +61,8 @@
 				<button ng-disabled="songForm.search.$invalid" class="btn btn-primary" ng-click="getArtists()" type="submit">Submit</button>
 			</div>
 		</form>
-		<form ng-show="!last"id="search-spotify"class="container" name="spotifyForm">
+		<!--form for the spotify search-->
+		<form ng-show="tab == 2"id="search-spotify"class="container" name="spotifyForm">
 			<div class="form-group">
 				<label>Search song keywords:</label>
 				<input  name="search" placeholder="Enter a spotify keyword" ng-model="track" class="form-control"></input>
@@ -56,8 +72,9 @@
 				<button ng-disabled="songForm.search.$invalid" class="btn btn-primary" ng-click="searchSpotify()" type="submit">Submit</button>
 			</div>
 		</form>
+		<!-- Results for last.fm search-->
 		<div id="location" class="container">
-			<table ng-show="iterator.length != 0 && last" class="table">
+			<table ng-show="iterator.length != 0 && tab == 1" class="table">
 				<caption>Top Artists For {{user}}</caption>
 				<tr>
 					<th>Rank</th>
@@ -75,10 +92,10 @@
 		</div>
 		<div ng-show="error">User not found</div>
 		
-		<!-- Results -->
-		<div id="result" class="container-fixed">
+		<!-- Results for spotify search -->
+		<div id="result" class="container">
 			
-			<table ng-show="tracks.length>0 && !last" class="table">
+			<table ng-show="tracks.length>0 && tab == 2" class="table">
 				<tr>
 					<th>Track</th>
 					<th>Artist</th>
@@ -94,7 +111,6 @@
 				
 			</table>
 		</div>
-	</div>
 	</div>
 </body>
 </html>

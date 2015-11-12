@@ -2,7 +2,7 @@ Parse.initialize("8LiZGBvExsCRqQIlwP8GB1q1yh7ShdmxIMYB882g", "FmLeLaAltBlxJSyFPy
 var BandData = Parse.Object.extend('BandData');
 
 var lastFmBase = "http://ws.audioscrobbler.com/2.0/";
-var googleMapBase = "https://maps.googleapis.com/maps/api/geocode/json";
+var googleMapBase = "https://maps.googleapis.com/maps/api/geocode/json"; //eventually want to map the locations
 var musicBrainzBase = "http://musicbrainz.org/ws/2/artist/";
 var lastFmKey = "ef2f18ff332a62f72ad46c4820bdb11b";
 var googleKey = "AIzaSyBIFJX-BioTGbdc5g80uSqKCM8EtUdyuqs";
@@ -10,7 +10,6 @@ var googleKey = "AIzaSyBIFJX-BioTGbdc5g80uSqKCM8EtUdyuqs";
 var data;
 var baseUrl = 'https://api.spotify.com/v1/search?type=track&query='
 var myApp = angular.module('myApp', [])
-var holder = new Array();
 
 var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
   
@@ -18,13 +17,15 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
   $scope.bands = [];
   $scope.locations = [];
   $scope.user = "";
-  $scope.last = true;
+  $scope.tab = 1;
   $scope.error = false;
   $scope.keyWord = "";
   $scope.songs = [];
-  
   $scope.audioObject = {};
+  $scope.about = false;
 
+  //This is for caching the data that is retrieved from the APIs. So if a band has been searched 
+  //before, its data is saved on parse so this call will not have to be done again in the future
   $scope.saveLocation = function(text, index){
       var json = JSON.parse(text);
       var artists = json.artists[0];
@@ -48,6 +49,7 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
 
   };
 
+  //makes the ajax request to the musicBrainz API to get the band location
   $scope.ajaxRequest = function(sync, destination, currentUrl, index){
 
     $.ajax({
@@ -58,10 +60,11 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
       type : 'get',
       success : function(text) {
         // called after the ajax has returned successful response
-        destination(text, index); // alerts the response
+        destination(text, index); 
         
       },
       error : function(){
+        //if there's an error, this band is set to unknown
         var currentBand = new BandData;
         currentBand.set("band", $scope.bands[index]);
         currentBand.set("address", "unknown");
@@ -70,11 +73,12 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
         if(!$scope.$$phase) {
           $scope.$apply();
         }
-
       }
     });
   }
 
+  //finds all the band locations for every band in the bands array
+  //populates the locations array
   $scope.getLocations = function(){
     
     for(var j = 0; j < $scope.bands.length; j++){
@@ -100,32 +104,13 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
               alert("An error occurred");
 
             }
-        })
-                
-        
+        }) 
       })(j);
-
-    }
-    
+    } 
   };
 
-  var loadLocations = function(){
-    
-    for(var i = 0; i < $scope.bands.length; i++){
-
-      (function(i){
-        var query = new Parse.Query(BandData);
-
-        query.equalTo("band", $scope.bands[i]);
-        query.find({
-            success:function(results){
-                console.log(results[0].get("address"));
-            }
-        })
-      })(i);
-    }
-  }
-
+  //gets the top artists of the last.fm user
+  //triggers the location search as well
   $scope.getArtists = function(){
     $scope.iterator = [];
     $scope.bands = [];
@@ -153,18 +138,15 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
       }
       
     })
-    
-    console.log($scope.bands)
-    //loadLocations();
   };
 
-  
-  $scope.toggle = function(lastFm){
+  //toggles which form and which table is shown on the page
+  $scope.toggle = function(curr){
     $scope.iterator = [];
     $scope.bands = [];
     $scope.songs = [];
     $scope.locations = [];
-    $scope.last = lastFm;
+    $scope.tab = curr;
   }
 
   //contacts the spotify API to find songs that match the input keyword
@@ -191,6 +173,11 @@ var myCtrl = myApp.controller('myCtrl', function($scope, $http) {
       $scope.getLocations();
     })
 
+  };
+
+  //toggles whether or not the "about this page" section is displayed
+  $scope.displayAbout = function(display){
+    $scope.about = display;
   };
 
 })
